@@ -1,0 +1,139 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "New API",
+        "version": "1.0.0",
+        "description": "A brand new API with no content.  Go nuts!"
+    },
+    "paths": {
+        "/customers": {
+            "summary": "Path used to manage the list of customers.",
+            "description": "The REST endpoint/path used to list and create zero or more `Customer` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Customer"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Successful response - returns an array of `Customer` entities."
+                    }
+                },
+                "operationId": "getCustomers",
+                "summary": "List All customers",
+                "description": "Gets a list of all `Customer` entities."
+            },
+            "post": {
+                "requestBody": {
+                    "description": "A new `Customer` to be created.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "createCustomer",
+                "summary": "Create a Customer",
+                "description": "Creates a new instance of a `Customer`."
+            }
+        },
+        "/customers/{customerId}": {
+            "summary": "Path used to manage a single Customer.",
+            "description": "The REST endpoint/path used to get, update, and delete single instances of an `Customer`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Customer"
+                                }
+                            }
+                        },
+                        "description": "Successful response - returns a single `Customer`."
+                    }
+                },
+                "operationId": "getCustomer",
+                "summary": "Get a Customer",
+                "description": "Gets the details of a single instance of a `Customer`."
+            },
+            "put": {
+                "requestBody": {
+                    "description": "Updated `Customer` information.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "updateCustomer",
+                "summary": "Update a Customer",
+                "description": "Updates an existing `Customer`."
+            },
+            "delete": {
+                "responses": {
+                    "204": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "deleteCustomer",
+                "summary": "Delete a Customer",
+                "description": "Deletes an existing `Customer`."
+            },
+            "parameters": [
+                {
+                    "name": "customerId",
+                    "description": "A unique identifier for a `Customer`.",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "in": "path",
+                    "required": true
+                }
+            ]
+        }
+    },
+    "components": {
+        "schemas": {
+            "Customer": {
+                "title": "Root Type for Customer",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "customerId": {
+                        "type": "string"
+                    },
+                    "customerName": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "customerId": "1",
+                    "customerName": "Art Vandelay"
+                }
+            }
+        }
+    }
+}

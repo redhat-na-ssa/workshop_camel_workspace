@@ -1,0 +1,149 @@
+- route:
+    id: create-customer
+    from:
+      id: from-1031
+      uri: direct
+      parameters:
+        name: createCustomer
+      steps:
+        - unmarshal:
+            id: unmarshal-1969
+            json:
+              unmarshalType: java.util.Map
+        - log:
+            id: log-1541
+            message: "Inserting customer: customer_id='${body[\"customerId\"]}',
+              name='${body[\"customerName\"]}'"
+        - to:
+            id: to-4925
+            uri: sql
+            parameters:
+              dataSource: "#customerDb"
+              query: INSERT INTO customer (customer_id, name) VALUES (:#customerId,
+                :#customerName);
+        - setBody:
+            id: setBody-2965
+            expression:
+              simple:
+                expression: ${null}
+- route:
+    id: update-customer
+    from:
+      id: from-1999
+      uri: direct
+      parameters:
+        name: updateCustomer
+      steps:
+        - unmarshal:
+            id: unmarshal-2455
+            json:
+              unmarshalType: java.util.Map
+        - log:
+            id: log-3028
+            message: "Updating customer: customer_id='${header.customerId}',
+              name='${body[\"customerName\"]}'"
+        - to:
+            id: to-2930
+            uri: sql
+            parameters:
+              dataSource: "#customerDb"
+              query: UPDATE customer SET name=:#customerName WHERE
+                customer_id=:#${header.customerId};
+        - setBody:
+            id: setBody-3427
+            expression:
+              simple:
+                expression: ${null}
+- beans:
+    - name: customerDb
+      properties:
+        databaseName: public
+        password: Abcd1234
+        portNumber: "5432"
+        serverName: localhost
+        user: user1
+      type: org.postgresql.ds.PGSimpleDataSource
+- route:
+    id: get-customer
+    from:
+      id: from-2972
+      uri: direct
+      parameters:
+        name: getCustomer
+      steps:
+        - log:
+            id: log-1672
+            message: "Fetching customer details: customer_id=${header.customerId}"
+        - to:
+            id: to-3840
+            uri: sql
+            parameters:
+              dataSource: "#customerDb"
+              outputType: SelectOne
+              query: SELECT customer_id AS "customerId", name AS "customerName" FROM customer
+                WHERE customer_id=:#${header.customerId};
+        - choice:
+            id: choice-1248
+            otherwise:
+              id: otherwise-1574
+              steps:
+                - marshal:
+                    id: marshal-2962
+                    json: {}
+            when:
+              - id: when-1859
+                steps:
+                  - log:
+                      id: log-4146
+                      message: "Customer not found: customer_id='${header.customerId}'"
+                  - setHeader:
+                      id: setHeader-2985
+                      expression:
+                        constant:
+                          expression: "404"
+                      name: CamelHttpResponseCode
+                expression:
+                  simple:
+                    expression: ${body} == ${null}
+- route:
+    id: delete-customer
+    from:
+      id: from-3182
+      uri: direct
+      parameters:
+        name: deleteCustomer
+      steps:
+        - log:
+            id: log-1166
+            message: "Deleting customer: customer_id='${header.customerId}'"
+        - to:
+            id: to-2478
+            uri: sql
+            parameters:
+              dataSource: "#customerDb"
+              query: DELETE FROM customer WHERE customer_id=:#${header.customerId};
+        - setBody:
+            id: setBody-2329
+            expression:
+              simple:
+                expression: ${null}
+- route:
+    id: get-customers
+    from:
+      id: from-3388
+      uri: direct
+      parameters:
+        name: getCustomers
+      steps:
+        - log:
+            id: log-3283
+            message: Getting customers
+        - to:
+            id: to-3601
+            uri: sql
+            parameters:
+              dataSource: "#customerDb"
+              query: SELECT customer_id AS "customerId", name AS "customerName" FROM customer;
+        - marshal:
+            id: marshal-3882
+            json: {}

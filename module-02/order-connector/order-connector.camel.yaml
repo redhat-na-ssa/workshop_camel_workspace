@@ -1,0 +1,35 @@
+- route:
+    id: kafka-to-expense-api
+    from:
+      id: from-3160
+      uri: kafka
+      parameters:
+        autoOffsetReset: earliest
+        brokers: localhost:9092
+        groupId: order-cashback-connector
+        topic: globex.order-aggregated
+      steps:
+        - log:
+            id: log-2134
+            message: "Picked up customer aggregated order message: '${body}'"
+        - choice:
+            id: choice-4933
+            otherwise:
+              id: otherwise-1534
+              steps:
+                - to:
+                    id: to-3836
+                    uri: rest
+                    parameters:
+                      bindingMode: off
+                      host: localhost:8080
+                      method: post
+                      path: /expense
+            when:
+              - id: when-1131
+                steps:
+                  - stop:
+                      id: stop-4849
+                expression:
+                  simple:
+                    expression: ${body} == ${null} || ${body} regex "\s*"

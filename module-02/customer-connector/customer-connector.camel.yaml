@@ -1,0 +1,143 @@
+- route:
+    id: kafka-to-customer-api
+    from:
+      id: from-4109
+      uri: kafka
+      parameters:
+        autoOffsetReset: earliest
+        brokers: localhost:9092
+        groupId: customer-cashback-connector
+        topic: globex.updates.public.customer
+      steps:
+        - log:
+            id: log-1153
+            message: "Picked up customer CDC message: '${body}'"
+        - choice:
+            id: choice-1889
+            otherwise:
+              id: otherwise-2749
+              steps:
+                - unmarshal:
+                    id: unmarshal-3045
+                    json:
+                      unmarshalType: java.util.Map
+                - routingSlip:
+                    id: routingSlip-2035
+                    expression:
+                      simple:
+                        expression: direct:${body["payload"]["op"]}
+            when:
+              - id: when-5874
+                steps:
+                  - stop:
+                      id: stop-3563
+                expression:
+                  simple:
+                    expression: ${body} == ${null} || ${body} regex "\s*"
+- route:
+    id: create-customer
+    from:
+      id: from-1852
+      uri: direct
+      parameters:
+        name: c
+      steps:
+        - setBody:
+            id: setBody-8466
+            expression:
+              simple:
+                expression: ${body["payload"]["after"]}
+        - setBody:
+            id: setBody-2486
+            expression:
+              groovy:
+                expression: "[customerId: body['user_id'], customerName: body['first_name'] + '
+                  ' + body['last_name']]"
+        - marshal:
+            id: marshal-1404
+            json: {}
+        - log:
+            id: log-1177
+            message: "Creating customer: json='${body}'"
+        - to:
+            id: to-1405
+            uri: rest
+            parameters:
+              host: localhost:8080
+              method: post
+              path: /customers
+              produces: application/json
+- route:
+    id: update-customer
+    from:
+      id: from-1089
+      uri: direct
+      parameters:
+        name: u
+      steps:
+        - setBody:
+            id: setBody-2059
+            expression:
+              simple:
+                expression: ${body["payload"]["after"]}
+        - setHeader:
+            id: setHeader-3179
+            expression:
+              simple:
+                expression: ${body["user_id"]}
+            name: customerId
+        - setBody:
+            id: setBody-2063
+            expression:
+              groovy:
+                expression: "[customerName: body['first_name'] + ' ' + body['last_name']]"
+        - marshal:
+            id: marshal-2747
+            json: {}
+        - log:
+            id: log-3768
+            message: "Updating customer: customerId='${header.customerId}', json='${body}'"
+        - to:
+            id: to-3479
+            uri: rest
+            parameters:
+              host: localhost:8080
+              method: put
+              path: /customers
+              produces: application/json
+              uriTemplate: /{customerId}
+- route:
+    id: delete-customer
+    from:
+      id: from-1598
+      uri: direct
+      parameters:
+        name: d
+      steps:
+        - setBody:
+            id: setBody-1476
+            expression:
+              simple:
+                expression: ${body["payload"]["before"]}
+        - setHeader:
+            id: setHeader-2513
+            expression:
+              simple:
+                expression: ${body["user_id"]}
+            name: customerId
+        - setBody:
+            id: setBody-3934
+            expression:
+              simple:
+                expression: ${null}
+        - log:
+            id: log-8180
+            message: "Deleting customer: customerId='${header.customerId}'"
+        - to:
+            id: to-3778
+            uri: rest
+            parameters:
+              host: localhost:8080
+              method: delete
+              path: /customers
+              uriTemplate: /{customerId}
