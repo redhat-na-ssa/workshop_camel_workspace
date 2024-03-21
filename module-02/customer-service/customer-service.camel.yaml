@@ -64,7 +64,7 @@
             message: "Fetching customer details: customer_id=${header.customerId}"
         - to:
             id: to-3840
-            uri: "sql:SELECT customer_id AS 'customerId', name AS 'customerName' FROM customer WHERE customer_id=:#${header.customerId};"
+            uri: "sql:SELECT customer_id AS \"customerId\", name AS \"customerName\" FROM customer WHERE customer_id=:#${header.customerId};"
             parameters:
               dataSource: "#customerDb"
               outputType: SelectOne
@@ -121,7 +121,7 @@
             message: Getting customers
         - to:
             id: to-3601
-            uri: "sql:SELECT customer_id AS 'customerId', name AS 'customerName' FROM customer;"
+            uri: "sql:SELECT customer_id AS \"customerId\", name AS \"customerName\" FROM customer;"
             parameters:
               dataSource: "#customerDb"
         - marshal:
