@@ -2,12 +2,14 @@
     id: kafka-to-expense-api
     from:
       id: from-3160
-      uri: kafka
+      uri: "kafka:globex.order-aggregated"
       parameters:
         autoOffsetReset: earliest
-        brokers: localhost:9092
+        brokers: "kafka-kafka-bootstrap.user1-globex.svc.cluster.local:9092"
         groupId: order-cashback-connector
-        topic: globex.order-aggregated
+        securityProtocol: SASL_PLAINTEXT
+        saslMechanism: SCRAM-SHA-512
+        saslJaasConfig: "org.apache.kafka.common.security.scram.ScramLoginModule required username='globex' password='globex';"
       steps:
         - log:
             id: log-2134
@@ -19,12 +21,10 @@
               steps:
                 - to:
                     id: to-3836
-                    uri: rest
+                    uri: "rest:post:/expense"
                     parameters:
-                      bindingMode: off
-                      host: localhost:8080
-                      method: post
-                      path: /expense
+                      bindingMode: "off"
+                      host: "cashback-service.user1-globex.svc.cluster.local:8080"
             when:
               - id: when-1131
                 steps:

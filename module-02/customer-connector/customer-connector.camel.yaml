@@ -2,12 +2,14 @@
     id: kafka-to-customer-api
     from:
       id: from-4109
-      uri: kafka
+      uri: "kafka:globex.updates.public.customer"
       parameters:
         autoOffsetReset: earliest
-        brokers: localhost:9092
+        brokers: "kafka-kafka-bootstrap.user1-globex.svc.cluster.local:9092"
         groupId: customer-cashback-connector
-        topic: globex.updates.public.customer
+        securityProtocol: SASL_PLAINTEXT
+        saslMechanism: SCRAM-SHA-512
+        saslJaasConfig: "org.apache.kafka.common.security.scram.ScramLoginModule required username='globex' password='globex';"
       steps:
         - log:
             id: log-1153
@@ -38,9 +40,7 @@
     id: create-customer
     from:
       id: from-1852
-      uri: direct
-      parameters:
-        name: c
+      uri: "direct:c"
       steps:
         - setBody:
             id: setBody-8466
@@ -51,8 +51,7 @@
             id: setBody-2486
             expression:
               groovy:
-                expression: "[customerId: body['user_id'], customerName: body['first_name'] + '
-                  ' + body['last_name']]"
+                expression: "[customerId: body['user_id'], customerName: body['first_name'] + ' ' + body['last_name']]"
         - marshal:
             id: marshal-1404
             json: {}
@@ -61,19 +60,15 @@
             message: "Creating customer: json='${body}'"
         - to:
             id: to-1405
-            uri: rest
+            uri: "rest:post:/customers"
             parameters:
-              host: localhost:8080
-              method: post
-              path: /customers
+              host: "cashback-service.user1-globex.svc.cluster.local:8080"
               produces: application/json
 - route:
     id: update-customer
     from:
       id: from-1089
-      uri: direct
-      parameters:
-        name: u
+      uri: "direct:u"
       steps:
         - setBody:
             id: setBody-2059
@@ -99,20 +94,15 @@
             message: "Updating customer: customerId='${header.customerId}', json='${body}'"
         - to:
             id: to-3479
-            uri: rest
+            uri: "rest:put:/customers:/{customerId}"
             parameters:
-              host: localhost:8080
-              method: put
-              path: /customers
+              host: "cashback-service.user1-globex.svc.cluster.local:8080"
               produces: application/json
-              uriTemplate: /{customerId}
 - route:
     id: delete-customer
     from:
       id: from-1598
-      uri: direct
-      parameters:
-        name: d
+      uri: "direct:d"
       steps:
         - setBody:
             id: setBody-1476
@@ -135,9 +125,6 @@
             message: "Deleting customer: customerId='${header.customerId}'"
         - to:
             id: to-3778
-            uri: rest
+            uri: "rest:delete:/customers:/{customerId}"
             parameters:
-              host: localhost:8080
-              method: delete
-              path: /customers
-              uriTemplate: /{customerId}
+              host: "cashback-service.user1-globex.svc.cluster.local:8080"

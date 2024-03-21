@@ -2,9 +2,7 @@
     id: create-customer
     from:
       id: from-1031
-      uri: direct
-      parameters:
-        name: createCustomer
+      uri: "direct:createCustomer"
       steps:
         - unmarshal:
             id: unmarshal-1969
@@ -12,15 +10,12 @@
               unmarshalType: java.util.Map
         - log:
             id: log-1541
-            message: "Inserting customer: customer_id='${body[\"customerId\"]}',
-              name='${body[\"customerName\"]}'"
+            message: "Inserting customer: customer_id='${body[\"customerId\"]}', name='${body[\"customerName\"]}'"
         - to:
             id: to-4925
-            uri: sql
+            uri: "sql:INSERT INTO customer (customer_id, name) VALUES (:#customerId, :#customerName);"
             parameters:
               dataSource: "#customerDb"
-              query: INSERT INTO customer (customer_id, name) VALUES (:#customerId,
-                :#customerName);
         - setBody:
             id: setBody-2965
             expression:
@@ -30,9 +25,7 @@
     id: update-customer
     from:
       id: from-1999
-      uri: direct
-      parameters:
-        name: updateCustomer
+      uri: "direct:updateCustomer"
       steps:
         - unmarshal:
             id: unmarshal-2455
@@ -40,15 +33,12 @@
               unmarshalType: java.util.Map
         - log:
             id: log-3028
-            message: "Updating customer: customer_id='${header.customerId}',
-              name='${body[\"customerName\"]}'"
+            message: "Updating customer: customer_id='${header.customerId}', name='${body[\"customerName\"]}'"
         - to:
             id: to-2930
-            uri: sql
+            uri: "sql:UPDATE customer SET name=:#customerName WHERE customer_id=:#${header.customerId};"
             parameters:
               dataSource: "#customerDb"
-              query: UPDATE customer SET name=:#customerName WHERE
-                customer_id=:#${header.customerId};
         - setBody:
             id: setBody-3427
             expression:
@@ -57,31 +47,27 @@
 - beans:
     - name: customerDb
       properties:
-        databaseName: public
-        password: Abcd1234
+        databaseName: cashback
+        password: cashbackmgr
         portNumber: "5432"
-        serverName: localhost
-        user: user1
+        serverName: cashback-db.user1-globex.svc.cluster.local
+        user: cashbackmgr
       type: org.postgresql.ds.PGSimpleDataSource
 - route:
     id: get-customer
     from:
       id: from-2972
-      uri: direct
-      parameters:
-        name: getCustomer
+      uri: "direct:getCustomer"
       steps:
         - log:
             id: log-1672
             message: "Fetching customer details: customer_id=${header.customerId}"
         - to:
             id: to-3840
-            uri: sql
+            uri: "sql:SELECT customer_id AS 'customerId', name AS 'customerName' FROM customer WHERE customer_id=:#${header.customerId};"
             parameters:
               dataSource: "#customerDb"
               outputType: SelectOne
-              query: SELECT customer_id AS "customerId", name AS "customerName" FROM customer
-                WHERE customer_id=:#${header.customerId};
         - choice:
             id: choice-1248
             otherwise:
@@ -109,19 +95,16 @@
     id: delete-customer
     from:
       id: from-3182
-      uri: direct
-      parameters:
-        name: deleteCustomer
+      uri: "direct:deleteCustomer"
       steps:
         - log:
             id: log-1166
             message: "Deleting customer: customer_id='${header.customerId}'"
         - to:
             id: to-2478
-            uri: sql
+            uri: "sql:DELETE FROM customer WHERE customer_id=:#${header.customerId};"
             parameters:
               dataSource: "#customerDb"
-              query: DELETE FROM customer WHERE customer_id=:#${header.customerId};
         - setBody:
             id: setBody-2329
             expression:
@@ -131,19 +114,16 @@
     id: get-customers
     from:
       id: from-3388
-      uri: direct
-      parameters:
-        name: getCustomers
+      uri: "direct:getCustomers"
       steps:
         - log:
             id: log-3283
             message: Getting customers
         - to:
             id: to-3601
-            uri: sql
+            uri: "sql:SELECT customer_id AS 'customerId', name AS 'customerName' FROM customer;"
             parameters:
               dataSource: "#customerDb"
-              query: SELECT customer_id AS "customerId", name AS "customerName" FROM customer;
         - marshal:
             id: marshal-3882
             json: {}
