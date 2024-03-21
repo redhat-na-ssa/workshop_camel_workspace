@@ -75,7 +75,7 @@
             id: to-1405
             uri: rest:post:/customers
             parameters:
-              host: "cashback-service.user1-globex.svc.cluster.local:8080"
+              host: "customer-service:8080"
               produces: application/json
 - route:
     id: update-customer
@@ -109,7 +109,7 @@
             id: to-3479
             uri: rest:put:/customers:/{customerId}
             parameters:
-              host: "cashback-service.user1-globex.svc.cluster.local:8080"
+              host: "customer-service:8080"
               produces: application/json
 - route:
     id: delete-customer
@@ -140,4 +140,4 @@
             id: to-3778
             uri: rest:delete:/customers:/{customerId}
             parameters:
-              host: "cashback-service.user1-globex.svc.cluster.local:8080"
+              host: "customer-service:8080"
