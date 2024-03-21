@@ -1,0 +1,2 @@
+oc create configmap customer-openapi-spec --from-file=customer-openapi-spec.json
+kamel run -t prometheus.enabled=true -d camel:platform-http -d mvn:org.postgresql:postgresql:42.7.3 --open-api configmap:customer-openapi-spec customer-service.camel.yaml

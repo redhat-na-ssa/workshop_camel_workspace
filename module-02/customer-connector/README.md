@@ -1,0 +1,1 @@
+kamel run -d camel:http -t prometheus.enabled=true customer-connector.camel.yaml 
