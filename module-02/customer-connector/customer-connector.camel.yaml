@@ -10,6 +10,7 @@
         saslJaasConfig: "org.apache.kafka.common.security.scram.ScramLoginModule required username='globex' password='globex';"
         saslMechanism: SCRAM-SHA-512
         securityProtocol: SASL_PLAINTEXT
+        seekTo: BEGINNING
       steps:
         - log:
             id: log-1153
@@ -40,7 +41,7 @@
                               id: stop-1482
                         expression:
                           simple:
-                            expression: ${body["op"]} regex "[^cud]"
+                            expression: ${body["op"]} regex "[^crud]"
             when:
               - id: when-5874
                 steps:
@@ -49,6 +50,15 @@
                 expression:
                   simple:
                     expression: ${body} == ${null} || ${body} regex "\s*"
+- route:
+    id: initial-create-customer
+    from:
+      id: from-1853
+      uri: direct:r
+      steps:
+        - to: 
+            id: to-1406
+            uri: direct:c
 - route:
     id: create-customer
     from:

@@ -1,1 +1,1 @@
-kamel run -d camel:http -t prometheus.enabled=true order-connector.camel.yaml
+kamel run -d camel:http -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true order-connector.camel.yaml
