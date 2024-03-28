@@ -1,1 +1,7 @@
 .camel-jbang
+temp/
+target/
+.mvn/
+.settings/
+**/.classpath
+**/.project
