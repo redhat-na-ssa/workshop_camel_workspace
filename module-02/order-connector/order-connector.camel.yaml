@@ -5,11 +5,11 @@
       uri: "kafka:globex.order-aggregated"
       parameters:
         autoOffsetReset: earliest
-        brokers: "kafka-kafka-bootstrap.user1-globex.svc.cluster.local:9092"
+        brokers: "{{kafka.brokers:localhost:9092}}"
         groupId: order-cashback-connector
-        securityProtocol: SASL_PLAINTEXT
-        saslMechanism: SCRAM-SHA-512
-        saslJaasConfig: "org.apache.kafka.common.security.scram.ScramLoginModule required username='globex' password='globex';"
+        securityProtocol: "{{?kafka.securityProtocol}}"
+        saslMechanism: "{{?kafka.saslMechanism}}"
+        saslJaasConfig: "{{?kafka.saslJaasConfig}}"
       steps:
         - log:
             id: log-2134
@@ -24,7 +24,7 @@
                     uri: "rest:post:/expense"
                     parameters:
                       bindingMode: "off"
-                      host: "cashback-service.user1-globex.svc.cluster.local:8080"
+                      host: "{{cashback-service.url:localhost:8080}}"
             when:
               - id: when-1131
                 steps:

@@ -47,11 +47,11 @@
 - beans:
     - name: customerDb
       properties:
-        databaseName: cashback
-        password: cashbackmgr
-        portNumber: "5432"
-        serverName: cashback-db.user1-globex.svc.cluster.local
-        user: cashbackmgr
+        databaseName: "{{db.databaseName:public}}"
+        password: "{{db.password:Abcd1234}}"
+        portNumber: "{{db.port:5432}}"
+        serverName: "{{db.serverName:localhost}}"
+        user: "{{db.user:user1}}"
       type: org.postgresql.ds.PGSimpleDataSource
 - route:
     id: get-customer
