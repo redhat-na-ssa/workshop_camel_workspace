@@ -1,0 +1,153 @@
+- route:
+    id: kafka-to-customer-api
+    from:
+      id: from-4109
+      uri: kafka:globex.updates.public.customer
+      parameters:
+        autoOffsetReset: earliest
+        brokers: "{{kafka.brokers:localhost:9092}}"
+        groupId: customer-cashback-connector
+        saslJaasConfig: "{{?kafka.saslJaasConfig}}"
+        saslMechanism: "{{?kafka.saslMechanism}}"
+        securityProtocol: "{{?kafka.securityProtocol}}"
+        seekTo: BEGINNING
+      steps:
+        - log:
+            id: log-1153
+            message: "Picked up customer CDC message: '${body}'"
+        - choice:
+            id: choice-1889
+            otherwise:
+              id: otherwise-2749
+              steps:
+                - unmarshal:
+                    id: unmarshal-3045
+                    json:
+                      unmarshalType: java.util.Map
+                - choice:
+                    id: choice-2011
+                    otherwise:
+                      id: otherwise-1074
+                      steps:
+                        - routingSlip:
+                            id: routingSlip-2824
+                            expression:
+                              simple:
+                                expression: direct:${body["op"]}
+                    when:
+                      - id: when-3391
+                        steps:
+                          - stop:
+                              id: stop-1482
+                        expression:
+                          simple:
+                            expression: ${body["op"]} regex "[^crud]"
+            when:
+              - id: when-5874
+                steps:
+                  - stop:
+                      id: stop-3563
+                expression:
+                  simple:
+                    expression: ${body} == ${null} || ${body} regex "\s*"
+- route:
+    id: initial-create-customer
+    from:
+      id: from-1853
+      uri: direct:r
+      steps:
+        - to: 
+            id: to-1406
+            uri: direct:c
+- route:
+    id: create-customer
+    from:
+      id: from-1852
+      uri: direct:c
+      steps:
+        - setBody:
+            id: setBody-8466
+            expression:
+              simple:
+                expression: ${body["after"]}
+        - setBody:
+            id: setBody-2486
+            expression:
+              groovy:
+                expression: "[customerId: body['user_id'], customerName: body['first_name'] + ' ' + body['last_name']]"
+        - marshal:
+            id: marshal-1404
+            json: {}
+        - log:
+            id: log-1177
+            message: "Creating customer: json='${body}'"
+        - to:
+            id: to-1405
+            uri: rest:post:/customers
+            parameters:
+              host: "{{customer-service.url:localhost:8080}}"
+              produces: application/json
+- route:
+    id: update-customer
+    from:
+      id: from-1089
+      uri: direct:u
+      steps:
+        - setBody:
+            id: setBody-2059
+            expression:
+              simple:
+                expression: ${body["after"]}
+        - setHeader:
+            id: setHeader-3179
+            expression:
+              simple:
+                expression: ${body["user_id"]}
+            name: customerId
+        - setBody:
+            id: setBody-2063
+            expression:
+              groovy:
+                expression: "[customerName: body['first_name'] + ' ' + body['last_name']]"
+        - marshal:
+            id: marshal-2747
+            json: {}
+        - log:
+            id: log-3768
+            message: "Updating customer: customerId='${header.customerId}', json='${body}'"
+        - to:
+            id: to-3479
+            uri: rest:put:/customers:/{customerId}
+            parameters:
+              host: "{{customer-service.url:localhost:8080}}"
+              produces: application/json
+- route:
+    id: delete-customer
+    from:
+      id: from-1598
+      uri: direct:d
+      steps:
+        - setBody:
+            id: setBody-1476
+            expression:
+              simple:
+                expression: ${body["before"]}
+        - setHeader:
+            id: setHeader-2513
+            expression:
+              simple:
+                expression: ${body["user_id"]}
+            name: customerId
+        - setBody:
+            id: setBody-3934
+            expression:
+              simple:
+                expression: ${null}
+        - log:
+            id: log-8180
+            message: "Deleting customer: customerId='${header.customerId}'"
+        - to:
+            id: to-3778
+            uri: rest:delete:/customers:/{customerId}
+            parameters:
+              host: "{{customer-service.url:localhost:8080}}"

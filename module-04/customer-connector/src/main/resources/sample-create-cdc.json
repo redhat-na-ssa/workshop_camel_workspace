@@ -1,0 +1,9 @@
+{
+    "before": null, 
+    "after": { 
+        "user_id": "avandalay",
+        "first_name": "Art",
+        "last_name": "Vandelay"
+    },
+    "op": "c"
+}
