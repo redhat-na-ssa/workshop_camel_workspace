@@ -179,7 +179,8 @@ spec:
 
             if ! oc get route $(params.service-name) 2> /dev/null; then
               echo "creating service route for $(params.service-name)"
-              oc expose svc $(params.service-name)
+              #oc expose svc $(params.service-name)
+              oc create route edge --service=$(params.service-name) 
             fi
       taskRef:
         kind: ClusterTask
