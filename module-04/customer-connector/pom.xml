@@ -40,8 +40,6 @@
         </dependencies>
     </dependencyManagement>
 
-
-
     <dependencies>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
@@ -51,7 +49,7 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-microprofile-health</artifactId>
         </dependency>
-				<dependency>
+		<dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-core</artifactId>
         </dependency>
@@ -87,7 +85,11 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-yaml-dsl</artifactId>
         </dependency>
-
+        <!-- requeired for the pipeline -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-openshift</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>
