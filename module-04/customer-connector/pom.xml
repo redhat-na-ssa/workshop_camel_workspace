@@ -86,10 +86,10 @@
             <artifactId>camel-quarkus-yaml-dsl</artifactId>
         </dependency>
         <!-- requeired for the pipeline -->
-        <dependency>
+        <!-- <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-openshift</artifactId>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>io.quarkus</groupId>

@@ -13,7 +13,7 @@ spec:
       description: 'Module directory Name (defaults to module-04)'      
       type: string
     - name: service-name
-      default: 'customer-service'
+      default: 'customer-connector'
       description: 'Service Name (maven project directory, one of: customer-service | customer-connector | order-connector)'      
       type: string
     - name: registry-repo
@@ -22,6 +22,7 @@ spec:
       type: string
     - name: maven-mirror-url
       default: https://repo1.maven.org/maven2/
+      #default: https://nexus-shared-maven-mirror.apps.rosa.rosa-9c845.halv.p3.openshiftapps.com/repository/maven-public/
       description: Maven Mirror Repo URL
       type: string
     - name: clone-subdir
@@ -80,6 +81,7 @@ spec:
             - '-Dmaven.repo.local=$(workspaces.source.path)/.m2'
             - '-Dquarkus.openshift.namespace=user1-camel'
             - '-Dquarkus.openshift.name=$(params.service-name)'
+            - '-Dquarkus.container-image.tag=$(tasks.git-clone.results.commit)'
             - '-Dquarkus.kubernetes.deploy=false'
             - '-Dquarkus.container-image.build=false'
             - '-Dquarkus.container-image.group=user1-camel'
@@ -173,7 +175,12 @@ spec:
         - name: SCRIPT
           value: |
             ls -la $(params.clone-subdir)/$(params.module-name)/$(params.service-name)/target/kubernetes/
-            oc apply -f $(params.clone-subdir)/$(params.module-name)/$(params.service-name)/target/kubernetes/openshift.yml
+            oc apply -f $(params.clone-subdir)/$(params.module-name)/$(params.service-name)/target/kubernetes/kubernetes.yml
+
+            if ! oc get route $(params.service-name) 2> /dev/null; then
+              echo "creating service route for $(params.service-name)"
+              oc expose svc $(params.service-name)
+            fi
       taskRef:
         kind: ClusterTask
         name: openshift-client
