@@ -22,13 +22,6 @@ commands:
         #[[ -d /usr/lib/jvm/java-17-openjdk ]] && rm -rf ${HOME}/.java/current/* && ln -s /usr/lib/jvm/java-17-openjdk/* ${HOME}/.java/current
         #copy maven settings pointing to in-cluster nexus mirror
         [[ -s "$PROJECT_SOURCE/settings.xml" ]] && cp -v $PROJECT_SOURCE/settings.xml $HOME/.m2/
-        #setup git default config
-        git config --local credential.helper store
-        git config --local pull.rebase true
-        git config --local fetch.prune true
-        git config --local diff.colorMoved zebra
-        git config user.username "user"
-        git config user.email "nobody@nowhere"
         echo "source /usr/share/bash-completion/completions/git" >> /home/user/.bashrc
         oc completion bash > /home/user/.oc_bash_completion
         echo "source /home/user/.oc_bash_completion" >> /home/user/.bashrc
