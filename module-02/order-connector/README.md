@@ -1,2 +1,5 @@
-oc create configmap order-connector-config --from-file=application.properties
-kamel run -d camel:http -p configmap:order-connector-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true order-connector.camel.yaml
+# How to Deploy using Camel K CLI
+
+    oc create configmap order-connector-config --from-file=application.properties
+
+    kamel run -d camel:http -p configmap:order-connector-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true order-connector.camel.yaml
