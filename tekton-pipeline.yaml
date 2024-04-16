@@ -93,7 +93,7 @@ spec:
             - '-Dquarkus.openshift.route.target-port=https'
             - '-Dquarkus.openshift.route.tls.termination=passthrough'
             - '-Dquarkus.openshift.route.tls.insecure-edge-termination-policy=None'
-            - '-Dquarkus.openshift.labels.app."openshift.io/runtime"=quarkus'
+            - '-Dquarkus.openshift.labels."app.openshift.io/runtime"=quarkus'
             - '-Dquarkus.openshift.annotations."app.openshift.io/vcs-url"=$(params.git-url)'
             - '-Dquarkus.openshift.annotations."app.openshift.io/vcs-ref"=$(params.git-revision)'
             - '-Dquarkus.openshift.annotations."prometheus.io/scrape"="true"'
@@ -179,7 +179,8 @@ spec:
 
             if ! oc get route $(params.service-name) 2> /dev/null; then
               echo "creating service route for $(params.service-name)"
-              oc expose svc $(params.service-name)
+              #oc expose svc $(params.service-name)
+              oc create route edge --service=$(params.service-name) 
             fi
       taskRef:
         kind: ClusterTask
