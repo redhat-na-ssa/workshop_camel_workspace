@@ -12,7 +12,7 @@ components:
 commands:
   - id: init-setup
     exec:
-      label: '99: initial setup'
+      label: '01: initial setup'
       component: "tools"
       workingDir: "${PROJECT_SOURCE}"
       commandLine: |
@@ -22,9 +22,33 @@ commands:
         #[[ -d /usr/lib/jvm/java-17-openjdk ]] && rm -rf ${HOME}/.java/current/* && ln -s /usr/lib/jvm/java-17-openjdk/* ${HOME}/.java/current
         #copy maven settings pointing to in-cluster nexus mirror
         [[ -s "$PROJECT_SOURCE/settings.xml" ]] && cp -v $PROJECT_SOURCE/settings.xml $HOME/.m2/
+        #setup git default config
+        git config --local credential.helper store
+        git config --local pull.rebase true
+        git config --local fetch.prune true
+        git config --local diff.colorMoved zebra
+        git config user.name "user"
+        git config user.email "user@opentlc.com"
         echo "source /usr/share/bash-completion/completions/git" >> /home/user/.bashrc
         oc completion bash > /home/user/.oc_bash_completion
         echo "source /home/user/.oc_bash_completion" >> /home/user/.bashrc
+  - id: oc-login
+    exec:
+      label: '02: OC Login'
+      component: "tools"
+      commandLine: |
+        clear
+        echo
+        echo "current user: $(oc whoami)"
+        echo "current project: $(oc project)"
+        echo
+        oc login "https://$KUBERNETES_SERVICE_HOST:443" --insecure-skip-tls-verify=true
+        # oc project {{ user }}-{{ camel_ns_suffix }}    
 events:
   postStart:
     - init-setup # <== Start of the workspace happens after this command is completed
+projects:
+  - git:
+      remotes:
+        origin: 'https://gitea.{{ route_subdomain }}/{{ user }}/workshop_camel_workspace.git'
+    name: workshop-camel-workspace
