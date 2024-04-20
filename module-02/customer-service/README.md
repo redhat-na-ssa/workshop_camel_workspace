@@ -1,3 +1,6 @@
-oc create configmap customer-service-config --from-file=application.properties
-oc create configmap customer-openapi-spec --from-file=customer-openapi-spec.json
-kamel run -d camel:platform-http -d mvn:org.postgresql:postgresql:42.7.3 -p configmap:customer-service-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true --open-api configmap:customer-openapi-spec customer-service.camel.yaml
+# How to Deploy using Camel K CLI
+
+    oc create configmap customer-service-config --from-file=application.properties
+    oc create configmap customer-openapi-spec --from-file=customer-openapi-spec.json
+
+    kamel run -d camel:platform-http -d mvn:org.postgresql:postgresql:42.7.3 -p configmap:customer-service-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true --open-api configmap:customer-openapi-spec customer-service.camel.yaml
