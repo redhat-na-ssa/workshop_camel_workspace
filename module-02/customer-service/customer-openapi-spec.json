@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "New API",
+        "title": "Customers API",
         "version": "1.0.0",
         "description": "A brand new API with no content.  Go nuts!"
     },
@@ -130,7 +130,7 @@
                     }
                 },
                 "example": {
-                    "customerId": "1",
+                    "customerId": "avandelay",
                     "customerName": "Art Vandelay"
                 }
             }

@@ -1,11 +1,11 @@
 {
     "before": { 
-        "user_id": "avandalay",
+        "user_id": "avandelay",
         "first_name": "Art",
         "last_name": "Vandelay"
     }, 
     "after": { 
-        "user_id": "avandalay",
+        "user_id": "avandelay",
         "first_name": "Arthur",
         "last_name": "Vandelay"
     },
