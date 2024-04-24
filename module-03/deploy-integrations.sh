@@ -1,12 +1,12 @@
 #/bin/sh 
 
-echo "==== Deploying customer-connector===="
+echo "==== Deploying order-connector===="
 
-oc delete configmap customer-connector-config > /dev/null 2>&1
-oc create configmap customer-connector-config --from-file=../module-02/customer-connector/application.properties
+oc delete configmap order-connector-config > /dev/null 2>&1
+oc create configmap order-connector-config --from-file=../module-02/order-connector/application.properties
 
-kamel run -d camel:http -p configmap:customer-connector-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true \
---wait ../module-02/customer-connector/customer-connector.camel.yaml
+kamel run -d camel:http -p configmap:order-connector-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' \
+ -t jolokia.enabled=true --wait ../module-02/order-connector/order-connector.camel.yaml
 
 echo "========"
 
@@ -23,12 +23,12 @@ kamel run -d camel:platform-http -d mvn:org.postgresql:postgresql:42.7.3 -p conf
 
 echo "========"
 
-echo "==== Deploying order-connector===="
+echo "==== Deploying customer-connector===="
 
-oc delete configmap order-connector-config > /dev/null 2>&1
-oc create configmap order-connector-config --from-file=../module-02/order-connector/application.properties
+oc delete configmap customer-connector-config > /dev/null 2>&1
+oc create configmap customer-connector-config --from-file=../module-02/customer-connector/application.properties
 
-kamel run -d camel:http -p configmap:order-connector-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' \
- -t jolokia.enabled=true --wait ../module-02/order-connector/order-connector.camel.yaml
+kamel run -d camel:http -p configmap:customer-connector-config -t prometheus.enabled=true -t prometheus.pod-monitor-labels='workshop=camel' -t jolokia.enabled=true \
+--wait ../module-02/customer-connector/customer-connector.camel.yaml
 
- echo "========"
+echo "========"
