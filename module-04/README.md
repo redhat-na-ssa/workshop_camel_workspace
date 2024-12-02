@@ -3,7 +3,7 @@
 from the projects folders in the module-02 you can run a command like this:
 
 ```
-jbang run '-Dcamel.jbang.version=4.6.0-SNAPSHOT' camel@apache/camel export \
+jbang run camel@apache/camel export \
 --gav=com.redhat.lab:customer-connector:1.0.0-SNAPSHOT \
 --runtime=quarkus \
 --directory=customer-connector \
