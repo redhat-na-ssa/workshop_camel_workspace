@@ -1,0 +1,12 @@
+- route:
+    id: timer-route
+    from:
+      id: from-1596
+      description: Trigger
+      uri: timer:hello-generator
+      parameters: {}
+      steps:
+        - log:
+            id: log-2696
+            description: logger
+            message: Hello World!

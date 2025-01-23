@@ -47,9 +47,3 @@ commands:
 events:
   postStart:
     - init-setup # <== Start of the workspace happens after this command is completed
-# projects:
-#   - git:
-#       remotes:
-#         # origin: 'https://gitea.{{ route_subdomain }}/{{ user }}/workshop_camel_workspace.git'
-#         origin: https://github.com/redhat-na-ssa/workshop_camel_workspace.git
-#     name: workshop-camel-workspace
