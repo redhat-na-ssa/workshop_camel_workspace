@@ -101,6 +101,10 @@
             <artifactId>camel-quarkus-rest</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-vertx-http</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-quarkus</artifactId>
             <version>4.1.0</version>
