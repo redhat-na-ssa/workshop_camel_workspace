@@ -1,12 +1,38 @@
 - route:
-    id: timer-route
+    id: kafka-to-expense-api
     from:
-      id: from-1596
-      description: Trigger
-      uri: timer:hello-generator
-      parameters: {}
+      id: from-3160
+      uri: kafka:globex.order-aggregated
+      parameters:
+        autoOffsetReset: earliest
+        brokers: "{{kafka.brokers:localhost:9092}}"
+        groupId: order-cashback-connector
+        saslJaasConfig: "{{?kafka.saslJaasConfig}}"
+        saslMechanism: "{{?kafka.saslMechanism}}"
+        securityProtocol: "{{?kafka.securityProtocol}}"
       steps:
         - log:
-            id: log-2696
-            description: logger
-            message: Hello World!
+            id: log-2134
+            message: "Picked up customer aggregated order message: '${body}'"
+        - removeHeaders:
+            id: removeHeaders-3485
+            pattern: "*"
+        - choice:
+            id: choice-4933
+            otherwise:
+              id: otherwise-1534
+              steps:
+                - to:
+                    id: to-3836
+                    uri: rest:post:/expense
+                    parameters:
+                      bindingMode: "off"
+                      host: "{{cashback-service.url:localhost:8080}}"
+            when:
+              - id: when-1131
+                steps:
+                  - stop:
+                      id: stop-4849
+                expression:
+                  simple:
+                    expression: ${body} == ${null} || ${body} regex "\s*"
